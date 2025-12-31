@@ -81,21 +81,18 @@ const Dashboard: React.FC = () => {
   // Save insights whenever they change
   useEffect(() => {
     if (insights.length > 0) {
-      // Note: We strip blobs before saving to localStorage as it can't handle them easily
-      const toSave = insights.map(({ audioBlob, ...rest }) => rest);
-      localStorage.setItem('mindcapture_insights', JSON.stringify(toSave));
+      localStorage.setItem('mindcapture_insights', JSON.stringify(insights));
     }
   }, [insights]);
 
-  const handleInsightGenerated = (result: ProcessingResult, audioBlob: Blob) => {
+  const handleInsightGenerated = (result: ProcessingResult) => {
     const newInsight: Insight = {
       id: crypto.randomUUID(),
       createdAt: Date.now(),
       transcription: result.transcription,
       title: result.title,
       summary: result.summary,
-      tags: result.tags,
-      audioBlob: audioBlob
+      tags: result.tags
     };
     
     setInsights(prev => [newInsight, ...prev]);

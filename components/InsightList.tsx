@@ -44,12 +44,6 @@ const InsightList: React.FC<InsightListProps> = ({ insights }) => {
               </span>
             ))}
           </div>
-          
-          {insight.audioBlob && (
-            <div className="mt-4 pt-2">
-                 <audio controls src={URL.createObjectURL(insight.audioBlob)} className="w-full h-8 opacity-70 hover:opacity-100 transition-opacity" />
-            </div>
-          )}
         </div>
       ))}
     </div>

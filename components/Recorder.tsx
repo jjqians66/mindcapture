@@ -4,7 +4,7 @@ import { processAudioInsight } from '../services/geminiService';
 import Visualizer from './Visualizer';
 
 interface RecorderProps {
-  onInsightGenerated: (result: ProcessingResult, audioBlob: Blob) => void;
+  onInsightGenerated: (result: ProcessingResult) => void;
 }
 
 const MAX_DURATION_SEC = 30;
@@ -89,7 +89,7 @@ const Recorder: React.FC<RecorderProps> = ({ onInsightGenerated }) => {
           console.log("Processing audio with Gemini API...");
           const result = await processAudioInsight(base64Data, blob.type);
           console.log("Processing successful:", result);
-          onInsightGenerated(result, blob);
+          onInsightGenerated(result);
           setRecorderState(RecorderState.IDLE);
         } catch (error: any) {
           console.error("Processing failed:", error);
