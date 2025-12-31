@@ -9,8 +9,9 @@ export default defineConfig(({ mode }) => {
     
     // In Vercel, environment variables are available in process.env during build
     // Merge with loaded env vars, prioritizing process.env (Vercel's injected vars)
+    // IMPORTANT: For Vite, we MUST use VITE_ prefix for client-side access
     const clerkKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || env.VITE_CLERK_PUBLISHABLE_KEY || '';
-    const geminiKey = process.env.VITE_GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || env.GEMINI_API_KEY || '';
+    const geminiKey = process.env.VITE_GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || '';
     
     console.log('🔧 Vite Config - Environment Variables:', {
       clerkKey: clerkKey ? `${clerkKey.substring(0, 10)}...` : 'MISSING',
