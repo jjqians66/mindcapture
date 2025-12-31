@@ -7,16 +7,28 @@ const MODEL_NAME = "gemini-flash-latest";
 
 export const processAudioInsight = async (base64Audio: string, mimeType: string): Promise<ProcessingResult> => {
   try {
-    const apiKey = getGeminiKey();
-    console.log("🔑 Gemini API Key check:", apiKey ? `Found (${apiKey.substring(0, 10)}...)` : "❌ Missing");
-    console.log("🔍 Checking import.meta.env:", {
-      VITE_GEMINI_API_KEY: typeof import.meta !== 'undefined' ? import.meta.env?.VITE_GEMINI_API_KEY?.substring(0, 10) + '...' : 'N/A',
-      GEMINI_API_KEY: typeof import.meta !== 'undefined' ? import.meta.env?.GEMINI_API_KEY?.substring(0, 10) + '...' : 'N/A',
+    // Direct access to import.meta.env (Vite's way)
+    const directKey = typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY 
+      ? String(import.meta.env.VITE_GEMINI_API_KEY) 
+      : '';
+    
+    const apiKey = getGeminiKey() || directKey;
+    
+    console.log("🔑 Gemini API Key Debug:", {
+      getGeminiKey: getGeminiKey() ? `Found (${getGeminiKey().substring(0, 10)}...)` : "❌ Missing",
+      directAccess: directKey ? `Found (${directKey.substring(0, 10)}...)` : "❌ Missing",
+      importMetaEnv: typeof import.meta !== 'undefined' ? {
+        VITE_GEMINI_API_KEY: import.meta.env?.VITE_GEMINI_API_KEY ? 'SET' : 'NOT SET',
+        GEMINI_API_KEY: import.meta.env?.GEMINI_API_KEY ? 'SET' : 'NOT SET',
+        allKeys: Object.keys(import.meta.env || {}).filter(k => k.includes('GEMINI') || k.includes('API'))
+      } : 'N/A',
+      finalKey: apiKey ? `Using: ${apiKey.substring(0, 10)}...` : "❌ No key found"
     });
     
-    if (!apiKey) {
+    if (!apiKey || apiKey.trim() === '') {
       const errorMsg = "Missing Gemini API Key. Please set VITE_GEMINI_API_KEY in your Vercel environment variables.";
       console.error("❌", errorMsg);
+      console.error("🔍 Full import.meta.env:", import.meta.env);
       throw new Error(errorMsg);
     }
 
