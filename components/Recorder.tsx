@@ -67,19 +67,42 @@ const Recorder: React.FC<RecorderProps> = ({ onInsightGenerated }) => {
     try {
       // Convert Blob to Base64
       const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64String = reader.result as string;
-        // Remove data URL prefix (e.g., "data:audio/webm;base64,")
-        const base64Data = base64String.split(',')[1];
-        
-        const result = await processAudioInsight(base64Data, blob.type);
-        onInsightGenerated(result, blob);
+      reader.onerror = () => {
+        console.error("FileReader error");
+        alert("Failed to read audio file. Please try again.");
         setRecorderState(RecorderState.IDLE);
       };
-    } catch (error) {
+      
+      reader.onloadend = async () => {
+        try {
+          const base64String = reader.result as string;
+          if (!base64String) {
+            throw new Error("Failed to convert audio to base64");
+          }
+          
+          // Remove data URL prefix (e.g., "data:audio/webm;base64,")
+          const base64Data = base64String.split(',')[1];
+          if (!base64Data) {
+            throw new Error("Invalid base64 data");
+          }
+          
+          console.log("Processing audio with Gemini API...");
+          const result = await processAudioInsight(base64Data, blob.type);
+          console.log("Processing successful:", result);
+          onInsightGenerated(result, blob);
+          setRecorderState(RecorderState.IDLE);
+        } catch (error: any) {
+          console.error("Processing failed:", error);
+          const errorMessage = error?.message || "Unknown error occurred";
+          alert(`Failed to process audio: ${errorMessage}\n\nPlease check:\n1. Your Gemini API key is set correctly\n2. You have API quota remaining\n3. Your internet connection is working`);
+          setRecorderState(RecorderState.IDLE);
+        }
+      };
+      
+      reader.readAsDataURL(blob);
+    } catch (error: any) {
       console.error("Processing failed", error);
-      alert("Failed to process audio. Please check your API key.");
+      alert(`Failed to process audio: ${error?.message || "Unknown error"}\n\nPlease check your API key and try again.`);
       setRecorderState(RecorderState.IDLE);
     }
   };
