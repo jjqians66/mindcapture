@@ -160,7 +160,11 @@ const Dashboard: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const clerkKey = getClerkKey();
+  // Get Clerk key - check both VITE_ prefixed and direct access
+  const clerkKey = getClerkKey() || 
+    (typeof process !== 'undefined' && process.env?.VITE_CLERK_PUBLISHABLE_KEY) ||
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY) ||
+    '';
 
   if (!clerkKey || (!clerkKey.startsWith('pk_test_') && !clerkKey.startsWith('pk_live_'))) {
      return (
