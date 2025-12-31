@@ -1,0 +1,7 @@
+{
+  "name": "MindCapture - AI Research Assistant",
+  "description": "Capture thoughts via voice, instantly transcribed and expanded into research insights using Gemini.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
