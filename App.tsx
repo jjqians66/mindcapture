@@ -71,7 +71,16 @@ const Dashboard: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setInsights(parsed);
+        // Remove any audioBlob fields from old data (cleanup)
+        const cleaned = parsed.map((insight: any) => {
+          const { audioBlob, ...rest } = insight;
+          return rest;
+        });
+        setInsights(cleaned);
+        // Save cleaned data back
+        if (cleaned.length > 0) {
+          localStorage.setItem('mindcapture_insights', JSON.stringify(cleaned));
+        }
       } catch (e) {
         console.error("Failed to load insights", e);
       }
